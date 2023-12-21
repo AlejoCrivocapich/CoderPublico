@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <h1>Chat</h1>
+    <div id="chat-box">
+        {{#each messages}}
+            <p><strong>{{user}}:</strong> {{message}}</p>
+        {{/each}}
+    </div>
+    <form id="message-form">
+        <input type="text" id="user" placeholder="Tu nombre" required>
+        <input type="text" id="message" placeholder="Escribe tu mensaje" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        document.getElementById('message-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const user = document.getElementById('user').value;
+            const message = document.getElementById('message').value;
+            socket.emit('chatMessage', { user, message });
+            document.getElementById('message').value = '';
+        });
+
+        socket.on('chatMessage', function(data) {
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('p');
+            messageElement.innerHTML = `<strong>${data.user}:</strong> ${data.message}`;
+            chatBox.appendChild(messageElement);
+        });
+    </script>
+</body>
+</html>
